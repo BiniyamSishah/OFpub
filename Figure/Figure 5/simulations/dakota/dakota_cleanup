@@ -1,0 +1,18 @@
+#!/bin/bash
+
+rm -rf dakota.rst 			> /dev/null 2>&1
+rm -rf idr-parsed-input.txt 		> /dev/null 2>&1
+rm -rf LHS* 				> /dev/null 2>&1
+rm -rf S4 				> /dev/null 2>&1
+rm -rf fort.* 				> /dev/null 2>&1				
+rm -rf workdir.*			> /dev/null 2>&1			
+rm -rf finaldata* 			> /dev/null 2>&1
+rm -rf population_* 			> /dev/null 2>&1				
+rm -rf discards* 			> /dev/null 2>&1				
+rm -rf JEGAGlobal.log 			> /dev/null 2>&1			
+rm -rf params.in.* 			> /dev/null 2>&1				
+rm -rf results.out.* 			> /dev/null 2>&1
+rm -rf run.out   			> /dev/null 2>&1	
+rm -rf stdout.out   			> /dev/null 2>&1	
+rm -rf table_out.dat   			> /dev/null 2>&1		
+rm -rf *~				> /dev/null 2>&1			

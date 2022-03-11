@@ -1,0 +1,139 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 0.01;	
+
+xmin   0;
+xmax   1; 
+ymin   0;
+ymin1  0.16;
+ymin2  2.5;
+ymax   30;
+zmin   0;
+zmax   1;
+
+
+
+
+xcells1 20;
+ycells1 1;
+zcells1 1;
+
+xcells2 20;
+ycells2 18;
+zcells2 1;
+
+
+xcells 20;
+ycells 50;
+zcells 1;
+
+vertices
+(
+    ($xmin    $ymin     $zmin)  //0
+    ($xmax    $ymin     $zmin)  //1
+    ($xmax    $ymin1    $zmin)  //2
+    ($xmin    $ymin1    $zmin)  //3
+    ($xmin    $ymin     $zmax)  //4
+    ($xmax    $ymin     $zmax)  //5
+    ($xmax    $ymin1    $zmax)  //6
+    ($xmin    $ymin1    $zmax)  //7
+    ($xmax    $ymin2    $zmin)  //8
+    ($xmin    $ymin2    $zmin)  //9
+    ($xmin    $ymin2    $zmax)  //10
+    ($xmax    $ymin2    $zmax)  //11
+    ($xmax    $ymax     $zmin)  //12
+    ($xmin    $ymax     $zmin)  //13
+    ($xmin    $ymax     $zmax)  //14
+    ($xmax    $ymax     $zmax)  //15
+
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7)          ($xcells1 $ycells1 $zcells1) simpleGrading  (1 1 1)           //bottom most         
+    hex (3 2 8 9 7 6 11 10)        ($xcells2 $ycells2 $zcells2) simpleGrading  (1 1 1)           //middle mesh 
+    hex (9 8 12 13 10 11 15 14)    ($xcells  $ycells  $zcells) simpleGrading   (1 11 1)           //top Mesh 
+);
+
+edges
+(
+);
+
+boundary
+(
+    top 
+    {
+        type symmetryPlane;
+        faces
+        (
+            (13 12 15 14)
+        );
+    }
+    
+    bottom
+    {
+        type wall;
+        faces
+        (
+             (4 5 1 0)
+        );
+    }
+    
+    inlet 
+    {
+        type cyclic;
+        neighbourPatch outlet;
+        faces
+        (
+            (0 3 7 4)
+            (3 9 10 7)
+            (9 13 14 10)
+        );
+    }
+    
+    outlet 
+    {
+        type cyclic;
+        neighbourPatch inlet;
+        faces
+        (
+            (2 1 5 6)
+            (8 2 6 11)
+            (12 8 11 15)
+        );
+    }
+    
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 1 2 3)
+            (4 7 6 5)
+            (3 2 8 9)
+            (13 9 8 12)
+            (10 11 6 7)
+            (14 15 11 10)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

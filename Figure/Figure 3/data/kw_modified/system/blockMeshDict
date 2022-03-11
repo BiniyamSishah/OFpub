@@ -1,0 +1,158 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 0.01;	//This is an scaling operation. Done at the end.
+
+xmin   0;
+xmax   1; 
+ymin   0;
+ymin1  0.005;
+ymin2  5;
+ymax   30;
+zmin   0;
+zmax   1;
+
+
+xcells1 20;  //50;
+ycells1 12; //250;
+zcells1 1;
+
+xcells2 20;  //50;
+ycells2 100; //250;
+zcells2 1;
+
+
+xcells 20;  //50;
+ycells 50; //250;
+zcells 1;
+
+
+//deltax 0.00775;	//As in Ghia et al 129 x 129 cells
+//deltax 0.05;
+//lx #calc "$xmax-$xmin";
+//xcells #calc "round($lx/$deltax)";
+
+//ycells $xcells;
+
+vertices
+(
+    ($xmin    $ymin     $zmin)  //0
+    ($xmax    $ymin     $zmin)  //1
+    ($xmax    $ymin1    $zmin)  //2
+    ($xmin    $ymin1    $zmin)  //3
+    ($xmin    $ymin     $zmax)  //4
+    ($xmax    $ymin     $zmax)  //5
+    ($xmax    $ymin1    $zmax)  //6
+    ($xmin    $ymin1    $zmax)  //7
+    ($xmax    $ymin2    $zmin)  //8
+    ($xmin    $ymin2    $zmin)  //9
+    ($xmin    $ymin2    $zmax)  //10
+    ($xmax    $ymin2    $zmax)  //11
+    ($xmax    $ymax     $zmin)  //12
+    ($xmin    $ymax     $zmin)  //13
+    ($xmin    $ymax     $zmax)  //14
+    ($xmax    $ymax     $zmax)  //15
+
+
+/*
+    (0 0 0)
+    (1 0 0)
+    (1 1 0)
+    (0 1 0)
+    (0 0 0.1)
+    (1 0 0.1)
+    (1 1 0.1)
+    (0 1 0.1)
+*/
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7)          ($xcells1 $ycells1 $zcells1) simpleGrading  (1 1 1)     // botttom mesh               //(1 60 1)
+    hex (3 2 8 9 7 6 11 10)        ($xcells2 $ycells2 $zcells2) simpleGrading  (1 450 1)    // middle mesh
+    hex (9 8 12 13 10 11 15 14)    ($xcells  $ycells  $zcells) simpleGrading   (1 2 1)     // top mesh 
+);
+
+edges
+(
+    //arc 0 1 (0.5 -0.1 0)
+    //arc 4 5 (0.5 -0.1 1)
+);
+
+boundary
+(
+    freeStream 
+    {
+        type symmetry;
+        faces
+        (
+            (13 12 15 14)
+        );
+    }
+    
+    bottomWall
+    {
+        type wall;
+        faces
+        (
+             (4 5 1 0)
+        );
+    }
+    
+    left
+    {
+        type cyclic;
+        neighbourPatch right;
+        faces
+        (
+            (0 3 7 4)
+            (3 9 10 7)
+            (9 13 14 10)
+        );
+    }
+    
+    right
+    {
+        type cyclic;
+        neighbourPatch left;
+        faces
+        (
+            (2 1 5 6)
+            (8 2 6 11)
+            (12 8 11 15)
+        );
+    }
+    
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 1 2 3)
+            (4 7 6 5)
+            (3 2 8 9)
+            (13 9 8 12)
+            (10 11 6 7)
+            (14 15 11 10)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

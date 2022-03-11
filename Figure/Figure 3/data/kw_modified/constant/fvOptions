@@ -1,0 +1,78 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+momentumSource
+{
+    type            vectorCodedSource;
+
+    active          yes;
+    selectionMode   all;
+    name    sourceTime; //5.0
+
+    vectorCodedSourceCoeffs
+    {
+
+     active          yes;
+     selectionMode   all;
+     fields      (U);
+        
+
+        codeInclude
+        #{
+        #};
+
+        codeCorrect
+        #{
+        #};
+
+        codeAddSup
+        #{
+
+         const Time& time = mesh().time();
+         const scalarField& V = mesh_.V(); //volume center
+         const vectorField& C = mesh_.C(); // cell center
+         vectorField& Source = eqn.source();
+         
+         forAll(C, i)
+         {
+         Source[i] = vector(1.293*std::sin(0.646*time.value()),0,0)*V[i]; 
+         }
+
+        #};
+
+        codeSetValue
+        #{
+        #};
+
+        // Dummy entry. Make dependent on above to trigger recompilation
+        code
+        #{
+            $codeInclude
+            $codeCorrect
+            $codeAddSup
+            $codeSetValue
+        #};
+    }
+
+    sourceTimeCoeffs
+    {
+        selectionMode   all; //5.0
+        // Dummy entry
+    }
+}
+
+// ************************************************************************* //

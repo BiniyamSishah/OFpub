@@ -1,0 +1,43 @@
+To = 9.72
+Uo = 2
+#nu = 0.00000114
+nu= 0.00000103138
+Q = 2*pi/To 
+V = sqrt(2*nu/Q)
+mu = 0.00114
+rho = 1000 
+TtD = 360/To
+ 
+ set terminal qt 0
+set terminal postscript eps dashed color font "Helvetica,15" size 6,4
+set title 'Dimensionless Wall Shear Stress, roughness, KwSST, Rd=3,295, Jensen .et.al (1989)'
+set termoption enhanced
+set output "tau_time1.eps"
+
+set key inside right maxcols 1
+set ytics format "{/:Bold {/=12 %h}}"
+set xtics format "{/:Bold {/=12 %h}}"
+
+set ylabel "{/:Bold {/=12 |{/Symbol t}|/({/Symbol r}U_{o}{/Symbol d})}}" 
+set xlabel "{/:Bold {/=12 {/Symbol F}}}"
+
+set xrange [0 : 360]
+set y2label "{/:Bold {/=12 {U|/Uo}}}"
+set ytics nomirror
+set y2tics  format "{/:Bold {/=12 %h}}"
+set tics out
+set yrange [0 : 8]
+set y2range [0 : 1.2]
+#set autoscale y2
+set style data lines
+
+plot './gnuplot/tauEXP1' using ($1+10):(abs($2)*0.001/(Uo*V*Q)) with points lt -1  linewidth 12 axes x1y1 t 'Jensen .et.al (1989) Exact.',\
+     './gnuplot/tauExpTrend' using ($1+10):(abs($2)*0.001/(Uo*V*Q)) with points lt 6  linewidth 3 axes x1y1 t 'Jensen .et.al (1989) Avg.',\
+     './gnuplot/fort' using (($1-4*pi)*180/pi):(abs($2)) axes x1y1 title "{/:Bold {/=12 {\Fort Rough}}}" with lines lt 4 dt 5 linewidth 3,\
+     "< cat postProcessing/probesDict/0/U | tr -d '()'" using ($1*TtD+90 -360):(abs($2)/Uo) axes x1y2 notitle 'U' with lines lt -1 dt 1 linewidth 1,\
+     "< cat postProcessing/wallShearStress/0/wallShearStress.dat | tr -d '()'" using ($1*TtD+90-360):(abs($6/(Uo*Q*V))) axes x1y1 title "{/:Bold {/=12 {\Model}}}"  with lines lt -1 dt  3 linewidth 3
+
+
+     
+reset
+

@@ -1,0 +1,1 @@
+LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/libModifiedForRoughness_23a0898b871225a107d840bf2d00f9cd44412810

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+dprepro $1 omega.template omega.in
+
+pwd
+cp -r ../casebase/* .
+cp omega.in 0/omega
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Get application name
+application=$(getApplication)
+
+runApplication blockMesh
+runApplication decomposePar 
+runParallel $(getApplication)
+rm -rf omega* params.in log.* processor*
+python3 cf3.py >> tmp.txt
+mv tmp.txt $2
+
+

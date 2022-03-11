@@ -1,0 +1,169 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       latestTime;      //startTime;     
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         21.48; 
+
+deltaT          0.0001;     
+
+writeControl    timeStep;
+
+writeInterval   100;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+/*
+libs
+(
+     "libforces.so"
+);
+*/
+
+ functions
+{
+
+#includeFunc yPlus
+#includeFunc wallShearStress
+//#includeFunc probesDict
+///////////////////////////////////////////////////////////////////////////
+   
+       fieldAverage1
+    {
+        type            fieldAverage;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl outputTime;
+        fields
+        (
+            U
+            {
+                mean        on;
+                prime2Mean  on;
+                base        time;
+            }
+        );
+        
+    restartOnRestart    false;
+    restartOnOutput     false;
+    periodicRestart     true;
+    restartPeriod       7;
+    }
+
+
+///////////////////////////////////////////////////////////////////////////
+
+stresses 
+  {
+          libs ("libforces.so");
+          patches   (bottomWall);
+          CofR      (0 0 0);
+         // ouputControl  timeStep;
+         // outputInterval   5;
+         writeControl outputTime;
+          type    forces;
+
+          p     p; 
+          U     U;
+          rho   rhoInf;
+          rhoInf 1000;
+
+          log    true;
+
+   }
+
+///////////////////////////////////////////////////////////////////////////
+    minmax_omega
+    {
+	type fieldMinMax;
+
+	functionObjectLibs ("libfieldFunctionObjects.so");
+
+	enabled true; 
+
+	mode component;
+    writeControl outputTime;
+
+	log true;
+
+	fields (omega);
+    }
+
+///////////////////////////////////////////////////////////////////////////
+    minmax_k
+    {
+	type fieldMinMax;
+
+	functionObjectLibs ("libfieldFunctionObjects.so");
+
+	enabled true; 
+
+	mode component;
+    writeControl outputTime;
+
+	log true;
+
+	fields (k);
+    }
+
+
+///////////////////////////////////////////////////////////////////////////
+ 
+ probes
+
+        {
+         type probes;
+         libs ("libsampling.so");
+         enabled true;
+         writeControl outputTime;
+
+         fields
+            (   
+                     U
+                     UMean
+            );
+         probeLocations
+            (
+
+       (0.085   0.40   .0005)     // above the freeStream;
+       (0.085   0.002  .0005)     // above ripple_trough;
+       (0.17    0.032  .0005)     // above the ripple_crest;
+
+
+            );
+        }
+//////////////////////////////////////////////////////////////////////////////        
+};
+
+// ************************************************************************* //
+

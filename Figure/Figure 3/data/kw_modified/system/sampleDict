@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+type sets;
+libs ("libsampling.so");
+
+
+interpolationScheme cellPointFace;
+
+
+setFormat       raw;
+
+
+fields
+(
+    U
+    wallShearStress
+);
+
+sets
+(
+
+    sampleU						
+    {							
+        type            lineCellFace;
+        axis            y;
+        start           (0.005    0   0);
+        end             (0.005  0.24   0);	
+    }
+    sampleWSS						
+    {							
+	type	lineUniform;
+	nPoints 1000;
+	axis 	distance; 	
+
+	start	(	0	    0	0   );
+	end		(	0.01	0	0	);				
+    }
+
+);
+
+// *********************************************************************** //

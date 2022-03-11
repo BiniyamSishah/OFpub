@@ -1,0 +1,6 @@
+/* dynamicCode:
+ * SHA1 = a9a789c06614b6c54487ce54324cb18c11567293
+ */
+fixedValueFvPatchFieldTemplate.C
+
+LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/libModifiedForRoughness_a9a789c06614b6c54487ce54324cb18c11567293

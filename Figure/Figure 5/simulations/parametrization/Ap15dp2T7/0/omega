@@ -1,0 +1,118 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \    /   O peration     | Website:  https://openfoam.org
+    \  /    A nd           | Version:  6
+     \/     M anipulation  |
+*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+    freeStream
+    {
+        type            symmetry;
+    }
+
+    bottomWall
+      {
+        type            codedFixedValue;
+        value           uniform 300;
+        redirectType    ModifiedForRoughness;              // The boundary condition is a given name
+       
+            codeInclude
+            #{
+                #include "fvCFD.H"
+                #include "cmath"
+                #include "iostream"
+            #};
+
+            codeOptions
+            #{
+                -I$(LIB_SRC)/finiteVolume/lnInclude \
+                -I$(LIB_SRC)/meshTools/lnInclude
+            #};
+
+    	    //libs needed to visualize BC in paraview
+    	    codeLibs
+    	    #{
+        	-lmeshTools \
+        	-lfiniteVolume
+    	    #};
+         
+           code 
+           #{
+            const fvPatch& boundaryPatch = patch();                // give access to boundary mesh patch mesh
+            const vectorField& Cf = boundaryPatch.Cf();            // give access to center of mesh 
+      //    const vectorField& normal = patch().nf();              // give access to the face normal 
+           
+            scalarField& field = *this; 
+            field = patchInternalField();                          // assign value from the internal field to the patch     
+
+            scalar Zr = 0.450;                                    // roughness to be incorporated 
+            scalar nuu = 0.00000114;                               // kinematic viscosity
+            scalar t = this ->db().time().value();                 // acess time information
+
+
+
+  
+           if (t>0.02)                                                                                                // perform the modification from the                second time step on wards
+            {
+                const fvPatchVectorField& Tau = patch().lookupPatchField<volVectorField, vector>("wallShearStress");  // access the wall shear stress vector
+               scalarField Taux = Tau.component(0);                                                                   // access x-component of the wall shear stress 
+               scalarField Tauxx = pow (Taux*Taux,0.5);   
+               scalarField Ushear =  pow(Tauxx,0.5);                                                                  // compute the shear velocity => sqrt(Tau/rho)
+               scalarField Ksplus =  Ushear*Zr/nuu;                                                                   // compute the non-dimensional roughness => (Ushear*Zr/nu) 
+               scalarField Treshold =(Ushear/Ushear)*25;                                                              // set the threshold in for all faces => kplus =25
+             
+     
+         forAll(Cf,faceI)  
+              {
+               if (Ksplus < Treshold )      
+                 {                 
+                 field[faceI] = scalar ((Tauxx[faceI]/nuu)*pow(50/Ksplus[faceI],2));           
+                 }
+               else 
+                 {
+                 field[faceI] = scalar ((Tauxx[faceI]/nuu)*(100/Ksplus[faceI]));             
+                 }
+              }
+            }
+          else
+           {
+           }    
+ Info << "OMEGA"<< field << endl;
+
+          #};
+       }
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,199 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// scaling operator:
+convertToMeters .0001;
+A 0.3;
+//Ripple length and height computation
+// constatns
+a 1;
+b 0.00187;
+c 0.0002;
+d 1.5;
+
+nu  0.000001;                      // kinematic viscosity
+
+sed  0.0002;                       // median diameter
+
+T  7;                              // period of simulation
+
+Omega #calc "6.2832/$T";           // angular vvelocity
+
+Uo #calc "$A*$Omega";              // amplituide of the free stream Velocity   
+
+// Ripple height and length according too Soulsby and Whitehouse
+
+l #calc "10000*($Uo/$Omega)* (1 / ( $a +  $b* ($Uo/($Omega*$sed))*(1 - std::exp(-pow(($c*$Uo/($Omega *$sed)),$d)))))";     // length 
+h #calc "$l*0.15*(1-std::exp(std::pow(-5000/($Uo/($Omega*$sed)),(35/10))))";                                               // height
+k #calc "6.2832*1000000/$l";        // Ripple wave number                                                                  // wave number
+
+
+// vertice coordinates:
+xmin 0;
+xmax $l;
+ymin1 #calc "0.5*$h";                              // The rippple height at X = 0 
+ymin #calc " $h*2";                                // Demarcates the height of the bottom block
+//ymax 3000;                                         // total height of the simulation domain
+ymax #calc "2.5*$l";
+zmin 0;
+zmax 1;
+
+
+// cell numbers:
+xcells 100;                                         // No. of rows in the X*dirction for the whole domain 
+ycells  60;                                         // No. of columns in the Y*dirction for the top block  
+ycells1 100;                                        // No. of columns in the Y*dirction for the bottom block  
+zcells 1;
+
+// generating vertices:
+vertices
+(                                   //curved edges 1 starting 2 ending
+    ($xmin $ymin $zmin)		//0         d1        
+    ($xmax $ymin $zmin)		//1         d2
+    ($xmax $ymax $zmin)		//2
+    ($xmin $ymax $zmin)		//3
+    ($xmin $ymin $zmax)		//4         c1
+    ($xmax $ymin $zmax)		//5         c2
+    ($xmax $ymax $zmax)		//6
+    ($xmin $ymax $zmax)		//7
+    ($xmin $ymin1 $zmax)    //8          a1
+    ($xmin $ymin1 $zmin)    //9          b1
+    ($xmax $ymin1 $zmin)    //10         b2
+    ($xmax $ymin1 $zmax)    //11         a2
+     
+
+
+);
+
+// generating blocks:
+blocks
+(
+    hex (0 1  2 3 4 5  6 7) ($xcells $ycells $zcells) simpleGrading (1 5 1)      //450
+    hex (9 10 1 0 8 11 5 4) ($xcells $ycells1 $zcells) simpleGrading (1 50 1)    //450 
+);
+
+edges
+(
+
+ BSpline 9 10 ( #codeStream                              // paramtrizing for forming a curving edge on the x-y plan at z =0 
+ {
+   codeInclude
+   #{
+      #include "pointField.H"
+   #};
+
+   code
+   #{
+      label nbPoints = $l;
+
+
+     for (label i = 0; i < nbPoints; i++)
+     {
+       scalar xi = i - 0.5*$h*std::sin(i*$k*0.000001);
+       scalar yi = 0.5*$h*std::cos(i*$k*0.000001);
+       os  << point(xi, yi, 0) << endl;
+      // Info  << point(xi, yi, 0) << endl;
+     }
+   #};
+  }
+   )
+
+    BSpline 8 11 ( #codeStream                              // paramtrizing for forming a curving edge on the x-y plan at z =0
+ {
+   codeInclude
+   #{
+      #include "pointField.H"
+   #};
+
+   code
+   #{
+     label nbPoints = $l;
+     for (label i = 0; i < nbPoints; i++)
+     {
+       scalar xi = i - 0.5*$h*std::sin(i*$k*0.000001);
+       scalar yi = 0.5*$h*std::cos(i*$k*0.000001);
+       os  << point(xi, yi, 1) << endl;
+     //  Info  << point(xi, yi, 1) << endl;
+     }
+   #};
+  }
+   )
+
+);
+
+boundary
+(
+    freeStream
+    {
+        type symmetry;
+        faces
+        (
+            (3 7 6 2)
+        );
+    }
+    bottomWall
+    {
+        type wall;
+        faces
+        (
+            (10 11 8 9)
+        );
+    }
+    left
+    {
+        type cyclic;
+        neighbourPatch right;
+        faces
+        (
+          (0 4 7 3)
+          (9 8 4 0)
+        );
+    }
+    right
+    {
+        type cyclic;
+        neighbourPatch left;
+        faces
+        (
+          (2 6 5 1)
+          (1 5 11 10)
+        );
+    }
+    front
+    {
+        type empty;
+        faces
+        (
+          (4 5 6 7)
+          (8 11 5 4) 
+        );
+    }
+    back
+    {
+        type empty;
+        faces
+        (
+          (0 3 2 1)
+          (9 0 1 10)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

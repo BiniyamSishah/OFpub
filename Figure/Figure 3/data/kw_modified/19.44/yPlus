@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "19.44";
+    object      yPlus;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    freeStream
+    {
+        type            symmetry;
+    }
+    bottomWall
+    {
+        type            calculated;
+        value           nonuniform List<scalar> 
+20
+(
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+0.221942
+)
+;
+    }
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //
