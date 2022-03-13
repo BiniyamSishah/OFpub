@@ -152,8 +152,8 @@ plot((timeee{1,1}-14)*(360/TT(1)),-stress_fw_2dv{1,1},'r','LineWidth',3);
 xlim([0 (Noo(i)/100)*(360/T(i))])
 
 set(gca, 'XColor','k', 'YColor','k');
-xlabel('$\phi^o $','Interpreter','latex');
-ylabel('${2{\tau}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
+xlabel('$\Omega$t','Interpreter','latex');
+ylabel('${2{\hat{\tau}_b}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
 
 yyaxis right
 plot(xl*(360/T(i)),(Uo(i)*cos(omega(i)*xl))./Uo(i),'k--','LineWidth',1); 
@@ -163,16 +163,19 @@ set(gca, 'XColor','k', 'YColor','g');
 
 
 set(gca, 'XColor','k', 'YColor','k');
+
+hold on 
+lgnd=legend('feature-resolved sim.','with many cells','with a cell','Interpreter','latex','box','off');
+set(lgnd,'color','none');
 set(gca,"DefaultAxesFontName",'Arial');
 set(gca,"DefaultTextFontName",'Arial');
 ax=gca;
 ax.FontSize = 20;
 title(strcat(tit{1}));
-hold on 
-legend('ensemble average','param-all','param-reduced','Interpreter','latex');
+
 end
 
-print('fig4_a','-dpng','-r600')
+print('fig4a','-dpng','-r600')
 
 %%
 
@@ -207,8 +210,8 @@ plot((timeee{1,2}-5.37)*(360/TT(2)),-stress_fw_2dv{1,2},'r','LineWidth',3);
 xlim([0 (Noo(i)/100)*(360/T(i))])
 
 set(gca, 'XColor','k', 'YColor','k');
-xlabel('$\phi^o $','Interpreter','latex');
-ylabel('${2{\tau}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
+xlabel('$\Omega$t','Interpreter','latex');
+ylabel('${2{\hat{\tau}_b}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
 
 yyaxis right
 plot(xl*(360/T(i)),(Uo(i)*cos(omega(i)*xl))./Uo(i),'k--','LineWidth',1); 
@@ -227,5 +230,5 @@ hold on
 %legend('ensemble average','param-all','param-reduced','Interpreter','latex');
 end
 
-print('fig4_b','-dpng','-r600')
+print('fig4b','-dpng','-r600')
 %%

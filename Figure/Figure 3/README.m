@@ -51,14 +51,19 @@ xlabel('$ y^+ $','Interpreter','latex');
 ylabel('$ u^+ $','Interpreter','latex');
 
 set(gca, 'XColor','k', 'YColor','k');
+
+
+hold on 
+lgnd= legend ([ha hb hc],'$\kappa - \omega $','$\kappa - \omega - $ SST','$\kappa - \omega - $ Mod ' ,'Interpreter','latex','box','off');
+set(lgnd,'color','none');
+
 set(gca,"DefaultAxesFontName",'Arial');
 set(gca,"DefaultTextFontName",'Arial');
 ax=gca;
 ax.FontSize = 20;
 
-hold on 
-legend ([ha hb hc],'$\kappa - \omega $','$\kappa - \omega - $ SST','$\kappa - \omega - $ Mod ' ,'Interpreter','latex');
-print('fig3_a','-dpng','-r600')
+
+% print('fig3a','-dpng','-r600')
 
 %%
 % comparison of bottom shear stress
@@ -93,7 +98,7 @@ p.MarkerSize = 8;
 xlim([0 180])
 
 set(gca, 'XColor','k', 'YColor','k');
-xlabel('$\phi^o $','Interpreter','latex');
+xlabel('$\Omega$t','Interpreter','latex');
 ylabel('${2{\tau}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
 
 yyaxis right
@@ -109,7 +114,9 @@ set(gca,"DefaultTextFontName",'Arial');
 ax=gca;
 ax.FontSize = 20;
 hold on 
-legend('Obs','$\kappa - \omega $','$\kappa - \omega - $ SST','$\kappa - \omega - $ Mod ' ,'Interpreter','latex');
-print('fig3_b','-dpng','-r600')
+lgnd=legend('Jensen et al. (1989)','$\kappa - \omega $','$\kappa - \omega - $ SST','$\kappa - \omega - $ Mod ' ,'Interpreter','latex','box','off');
+set(lgnd,'color','none');
+
+print('fig3b','-dpng','-r600')
 
 %%

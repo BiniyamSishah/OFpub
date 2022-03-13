@@ -33,7 +33,7 @@ ax.FontSize = 20;
 
 legend(' feature resolved sim.','parametrization','Interpreter','latex');
 
-print('fig6_a','-dpng','-r600')
+print('fig6a','-dpng','-r600')
 
 %% Van Rijn et al.(1993) ks=1-3*h
 
@@ -59,4 +59,4 @@ set(gca,"DefaultTextFontName",'Arial');
 ax=gca;
 ax.FontSize = 20;
 
-print('fig6_b','-dpng','-r600')
+print('fig6b','-dpng','-r600')

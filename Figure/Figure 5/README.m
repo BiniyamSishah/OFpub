@@ -64,8 +64,8 @@ U_inf{i}=Uo(i)*cos(omega(i)*time{1,i});
 end
 %%
 
-for i=1:length(file_in)
-    
+%for i=1:length(file_in)
+for i=1
  xl=[1:No(i)]*dt(i);  
  xllv=[1:Noo(i)]*dtt(i);  
  xjbc=[1:No(i)]*dt(i);  
@@ -97,8 +97,8 @@ alpha(0.15)
 xlim([0 (Noo(i)/100)*(360/T(i))])
 
 set(gca, 'XColor','k', 'YColor','k');
-xlabel('$\phi^o $','Interpreter','latex');
-ylabel('${2{\tau}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
+xlabel('$\Omega$t','Interpreter','latex');
+ylabel('${2{\hat{\tau}_b}}/ ( {\rho} {{U_o}}^2)$','Interpreter','latex');
 
 yyaxis right
 plot(xl*(360/T(i)),(Uo(i)*cos(omega(i)*xl))./Uo(i),'k--','LineWidth',1); 
@@ -114,8 +114,8 @@ ax=gca;
 ax.FontSize = 20;
 title(strcat(tit{i}));
 hold on 
-legend(' ensemble average','parametrization','Interpreter','latex');
-
+lgnd=legend('feature-resolved sim.','parametrization','Interpreter','latex','box','off');
+set(gca,'color','none');
 print(tit{i},'-dpng','-r600')
 
 end
